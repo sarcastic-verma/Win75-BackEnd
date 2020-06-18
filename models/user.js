@@ -8,13 +8,13 @@ const userSchema = new mongoose.Schema({
     image: {type: String},
     password: {type: String, required: true, minlength: 6},
     referralCode: {type: String},
-    transactions: [{type: mongoose.Types.ObjectId, ref: 'Trans'}],
-    games: [{type: mongoose.Types.ObjectId, ref: 'Games'}],
+    transactions: [{type: mongoose.Types.ObjectId, ref: 'Transaction'}],
+    games: [{type: mongoose.Types.ObjectId, ref: 'Game'}],
     points: {type: Number, default: 50},
     wallet: {type: Number, default: 50},
     joinedOn: {type: String, required: true},
-    totalAmountWon:{type:Number,default:0},
-    totalAmountSpent:{type:Number,default:0},
+    totalAmountWon: {type: Number, default: 0},
+    totalAmountSpent: {type: Number, default: 0},
 });
 
 userSchema.plugin(uniqueValidator);

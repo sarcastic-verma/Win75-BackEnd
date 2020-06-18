@@ -2,7 +2,7 @@ const {validationResult} = require('express-validator');
 const mongoose = require('mongoose');
 
 const HttpError = require('../models/http-error');
-const Story = require('../models/story');
+const Story = require('../models/game');
 const User = require('../models/user');
 
 

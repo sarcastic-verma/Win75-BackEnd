@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const storySchema = new Schema({
+const gameSchema = new Schema({
     title: {type: String, required: true},
     intro: {type: String, required: true},
     isAnonymous: {type: Boolean, required: true},
@@ -14,4 +14,4 @@ const storySchema = new Schema({
     createdOn: {type: String, required: true}
 });
 
-module.exports = mongoose.model('Story', storySchema);
+module.exports = mongoose.model('Game', gameSchema);

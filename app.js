@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const storiesRoutes = require('./routes/stories-routes');
-const followRoutes = require('./routes/follow-routes');
 const usersRoutes = require('./routes/users-routes');
 const bannersRoutes = require('./routes/banners-routes');
 const categoryRoutes = require('./routes/category-routes');
@@ -31,7 +30,6 @@ app.use((req, res, next) => {
 
 app.use('/api/stories', storiesRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/follow', followRoutes);
 app.use('/api/banners', bannersRoutes);
 app.use('/api/category', categoryRoutes);
 

@@ -1,4 +1,4 @@
-const Category = require('../models/category').model;
+const Category = require('../models/player');
 const HttpError = require('../models/http-error');
 
 const createCategory = async (req, res, next) => {
@@ -31,7 +31,7 @@ const createCategory = async (req, res, next) => {
 };
 
 
-const getAllCategories = async(req, res,next) => {
+const getAllCategories = async (req, res, next) => {
     let categories;
     try {
         categories = await Category.find();
