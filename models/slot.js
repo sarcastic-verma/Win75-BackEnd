@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 
-const categorySchema = new mongoose.Schema({
-    name: {
+const slotSchema = new mongoose.Schema({
+    startTime: {type: String, required: true},
+    endTime: {
         type: String,
-        required: true,
-        default: "Undisclosed Genre"
+        required: true
     },
+    games: [{
+        type: {type: mongoose.Types.ObjectId, ref: 'Game'},
+        required: true,
+    }],
 });
-
-exports.model = new mongoose.model('Category', categorySchema);
-exports.categorySchema = categorySchema;
+module.exports = new mongoose.model("Slot", slotSchema);

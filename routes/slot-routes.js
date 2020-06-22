@@ -1,6 +1,6 @@
 const {Router} = require("express");
 const router = Router();
-const categoryControllers = require('../controllers/category-controllers');
+const categoryControllers = require('../controllers/slots-controllers');
 
 router.post('/',categoryControllers.createCategory);
 router.get('/',categoryControllers.getAllCategories);

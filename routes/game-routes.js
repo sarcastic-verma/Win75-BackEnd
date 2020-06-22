@@ -1,7 +1,7 @@
 const express = require('express');
 const {check} = require('express-validator');
 
-const storiesControllers = require('../controllers/stories-controllers');
+const storiesControllers = require('../controllers/games-controllers');
 const fileUpload = require('../middleware/file-upload');
 const checkAuth = require('../middleware/check-auth');
 

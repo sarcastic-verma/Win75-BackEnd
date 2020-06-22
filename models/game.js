@@ -1,17 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
 const gameSchema = new Schema({
-    title: {type: String, required: true},
-    intro: {type: String, required: true},
-    isAnonymous: {type: Boolean, required: true},
-    description: {type: String, required: true},
-    image: {type: String, required: true},
-    category: [{type: mongoose.Types.ObjectId, default: ["Undisclosed Genre"], ref: "Category"}],
-    featured: {type: Boolean, default: false},
-    creator: {type: mongoose.Types.ObjectId, required: true, ref: 'User'},
-    likedBy: [{type: mongoose.Types.ObjectId, ref: 'User', required: true}],
-    createdOn: {type: String, required: true}
+    distributableProfitPercent: {type: Number, required: true},
+    businessProfit: {type: Number, required: true},
+    distributableProfit: {type: Number, required: true},
+    totalProfit: {type: Number, required: true},
+    gameInvestment: {type: Number, required: true},
+    playerCount: {type: Number, required: true},
+    droppedOptions: [{type: String, required: true}],
+    spadesTotalInvestment: {type: Number, required: true},
+    heartTotalInvestment: {type: Number, required: true},
+    diamondTotalInvestment: {type: Number, required: true},
+    clubTotalInvestment: {type: Number, required: true},
+    betValue: {type: Number, required: true},
+    optionWiseSummary: [{type: mongoose.Types.ObjectId, ref: 'OptionSummary', required: true}],
+    playerSummary: [{type: mongoose.Types.ObjectId, ref: 'PlayerSummary', required: true}],
 });
 
 module.exports = mongoose.model('Game', gameSchema);

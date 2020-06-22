@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     transactions: [{type: mongoose.Types.ObjectId, ref: 'Transaction'}],
     games: [{type: mongoose.Types.ObjectId, ref: 'Game'}],
     points: {type: Number, default: 50},
-    wallet: {type: Number, default: 50},
+    inWalletCash: {type: Number, default: 50},
     joinedOn: {type: String, required: true},
     totalAmountWon: {type: Number, default: 0},
     totalAmountSpent: {type: Number, default: 0},

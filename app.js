@@ -5,10 +5,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const storiesRoutes = require('./routes/stories-routes');
-const usersRoutes = require('./routes/users-routes');
-const bannersRoutes = require('./routes/banners-routes');
-const categoryRoutes = require('./routes/category-routes');
+const storiesRoutes = require('./routes/game-routes');
+const usersRoutes = require('./routes/user-routes');
+const bannersRoutes = require('./routes/eventWindow-routes');
+const categoryRoutes = require('./routes/slot-routes');
 const HttpError = require('./models/http-error');
 
 const app = express();

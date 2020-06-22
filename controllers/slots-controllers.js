@@ -1,4 +1,4 @@
-const Category = require('../models/player');
+const Category = require('../models/player_summary');
 const HttpError = require('../models/http-error');
 
 const createCategory = async (req, res, next) => {

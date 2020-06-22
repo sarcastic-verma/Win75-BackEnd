@@ -1,5 +1,5 @@
 const {Router} = require('express');
-const bannersController = require('../controllers/banners-controllers');
+const bannersController = require('../controllers/eventWindow-controllers');
 
 const router = new Router();
 
