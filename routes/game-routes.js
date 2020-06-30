@@ -1,51 +1,18 @@
 const express = require('express');
-const {check} = require('express-validator');
-
-const storiesControllers = require('../controllers/games-controllers');
-const fileUpload = require('../middleware/file-upload');
+const gameController = require('../controllers/games-controller');
 const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
-router.get('/', storiesControllers.getAllStories);
-
-router.get('/:sid', storiesControllers.getStoryById);
-
-router.get('/user/:uid', storiesControllers.getStoriesByUserId);
-router.get('/search/:query', storiesControllers.searchStories);
 router.use(checkAuth);
+router.get('/:gid', gameController.getGameById);
 
-router.post(
-    '/',
-    fileUpload.single('image'),
-    [
-        check('title')
-            .not()
-            .isEmpty(),
-        check('intro').isLength({min: 5}),
-        check('description').isLength({max: 244}),
-    ],
-    storiesControllers.createStory
+router.get('/user/:uid', gameController.getGamesByUserId);
+
+router.get(
+    '/start/:gid',
+    gameController.startGame
 );
-
-router.patch(
-    '/:sid',
-    fileUpload.single('image'),
-    [
-        check('title')
-            .not()
-            .isEmpty(),
-        check('intro').isLength({min: 5}),
-        check('description').isLength({max: 244})
-    ],
-    storiesControllers.updateStory
-);
-
-router.delete('/:sid', storiesControllers.deleteStory);
-
-router.patch('/like/:sid', storiesControllers.likeStory);
-
-router.patch('/unlike/:sid', storiesControllers.unLikeStory);
-
+router.post('/endgame:/gid', gameController.endGame);
 
 module.exports = router;

@@ -1,9 +1,8 @@
 const {Router} = require('express');
-const bannersController = require('../controllers/eventWindow-controllers');
+const eventWindowController = require('../controllers/eventWindow-controller');
 
 const router = new Router();
 
-router.get('/', bannersController.getAllBanners);
-router.get('/:bid', bannersController.getBanner);
+router.get('/:bid', eventWindowController.getEventWindow);
 
 module.exports = router;

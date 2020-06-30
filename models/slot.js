@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const slotSchema = new mongoose.Schema({
+        eventWindowId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'EventWindow', required: true
+    },
     startTime: {type: String, required: true},
     endTime: {
         type: String,

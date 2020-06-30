@@ -11,7 +11,7 @@ const eventWindowSchema = new mongoose.Schema({
         required: true
     },
     slots: [{
-        type: {type: mongoose.Types.ObjectId, ref: 'Slot'},
+        type:  mongoose.Types.ObjectId, ref: 'Slot',
         required: true,
     }],
 });

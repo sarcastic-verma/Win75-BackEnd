@@ -39,16 +39,23 @@ const getUserById = async (req, res, next) => {
     });
 };
 
-const signup = async (req, res, next) => {
+const signUp = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return next(
-            new HttpError('Invalid inputs passed, please check your data.', 422)
+            new HttpError('Invalid Inputs passed', 422)
         );
     }
 
+    let referralCode, inWalletCash;
     const {username, email, password} = req.body;
-
+    if (req.body.referralCode) {
+        referralCode = req.body.referralCode;
+        inWalletCash = 20;
+    } else {
+        referralCode = "none";
+        inWalletCash = 0;
+    }
     let existingUser;
     try {
         existingUser = await User.findOne({email: email});
@@ -96,10 +103,11 @@ const signup = async (req, res, next) => {
         email,
         image: 'http://localhost:5000/' + filePath,
         password: hashedPassword,
-        stories: [],
+        games: [],
+        transactions: [],
+        referralCode: referralCode,
         joinedOn: date,
-        followers: [],
-        following: [],
+        inWalletCash: inWalletCash, points: 0,
     });
 
     try {
@@ -193,39 +201,57 @@ const login = async (req, res, next) => {
         token: token
     });
 };
-
-const searchUsers = async (req, res, next) => {
-    const query = req.params.query;
-    let results;
+const forgotPassword = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid Inputs passed', 422)
+        );
+    }
+    const email = req.params.email;
+    const password = req.body.password;
+    let user;
     try {
-        let agg = User.aggregate([{
-            $search: {
-                "text": {
-                    "query": query, "path": "username", "fuzzy": {
-                        "maxEdits": 2,
-                        "maxExpansions": 10,
-                    }
-                }
-            }
-        }, {
-            $project: {
-                "username": 1,
-            }
-        }]);
-        results = await agg.exec();
+        console.log(email);
+        user = await User.findOne({
+            email
+        });
+        console.log(user);
+        // User.findByIdAndUpdate(userId, {password: password}, {}, () => {
+        // });
     } catch (err) {
-        const error = new HttpError(err.message, 404);
+        const error = new HttpError("Something went wrong, please try again later.", err.status);
         return next(error);
     }
-    if (results.length === 0) {
-        await res.json({results: "No results found!!"});
-    } else {
-        await res.json({results: results});
+    if (!user) {
+        const error = new HttpError(
+            'You are not registered!!!',
+            403
+        );
+        return next(error);
+    }
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(password, 12);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not create user, please try again.',
+            500
+        );
+        return next(error);
+    }
+    user.password = hashedPassword;
+    try {
+        await user.save();
+    } catch (err) {
+        const error = new HttpError("Error saving user, try again later.", err.status);
+        return next(error);
     }
 
+    res.status(200).json({
+        message: "Password updated"
+    });
 };
-//todo: implement edit user
-
 const editUser = async (req, res, next) => {
     const userId = req.params.uid;
     let user;
@@ -239,10 +265,46 @@ const editUser = async (req, res, next) => {
         const error = new HttpError("Can't find user for provided id", 404);
         return next(error);
     }
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+    const {username, email, password} = req.body;
+    let filePath;
+    try {
+        if (req.file) {
+            filePath = req.file.path;
+        } else {
+            filePath = 'uploads/images/DUser.jpeg'
+        }
+    } catch (err) {
+        const error = new HttpError(err.message + "olol", err.code);
+        return next(error);
+    }
+    user.username = username;
+    user.email = email;
+    user.password = password;
+    user.image = 'http://localhost:5000/' + filePath;
+    try {
+        await user.save();
+    } catch (err) {
+        const error = new HttpError(
+            err.message,
+            500
+        );
+        return next(error);
+    }
+    res.status(200).json({
+        user: user.toObject(
+            {getters: true})
+    });
 };
 exports.getUsers = getUsers;
 exports.editUser = editUser;
-exports.signup = signup;
+exports.signup = signUp;
 exports.login = login;
 exports.getUserById = getUserById;
-exports.searchUsers = searchUsers;
+exports.forgotPassword = forgotPassword;

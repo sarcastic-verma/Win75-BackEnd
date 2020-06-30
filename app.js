@@ -5,13 +5,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const storiesRoutes = require('./routes/game-routes');
-const usersRoutes = require('./routes/user-routes');
-const bannersRoutes = require('./routes/eventWindow-routes');
-const categoryRoutes = require('./routes/slot-routes');
+const gameRoutes = require('./routes/game-routes');
+const userRoutes = require('./routes/user-routes');
+const eventWindowRoutes = require('./routes/eventWindow-routes');
+const slotRoutes = require('./routes/slot-routes');
+const transactionRoutes = require('./routes/transaction-routes');
+const playerSummaryRoutes = require('./routes/playerSummary-routes');
+const optionSummaryRoutes = require('./routes/optionSummary-routes');
 const HttpError = require('./models/http-error');
 
 const app = express();
+
 
 app.use(bodyParser.json());
 
@@ -28,10 +32,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api/stories', storiesRoutes);
-app.use('/api/users', usersRoutes);
-app.use('/api/banners', bannersRoutes);
-app.use('/api/category', categoryRoutes);
+app.use('/api/game', gameRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/window', eventWindowRoutes);
+app.use('/api/slot', slotRoutes);
+// app.use('/api/transaction', transactionRoutes);
+// app.use('/api/playerSummary', playerSummaryRoutes);
+// app.use('/api/optionSummary', optionSummaryRoutes);
 
 app.use((req, res, next) => {
     throw new HttpError('Could not find this route.', 404);

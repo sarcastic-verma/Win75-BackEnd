@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 
 const gameSchema = new Schema({
+    slotId: {type: mongoose.Types.ObjectId, ref: 'Slot', required: true},
     distributableProfitPercent: {type: Number, required: true},
     businessProfit: {type: Number, required: true},
     distributableProfit: {type: Number, required: true},
@@ -15,7 +16,7 @@ const gameSchema = new Schema({
     diamondTotalInvestment: {type: Number, required: true},
     clubTotalInvestment: {type: Number, required: true},
     betValue: {type: Number, required: true},
-    optionWiseSummary: [{type: mongoose.Types.ObjectId, ref: 'OptionSummary', required: true}],
+    optionSummary: [{type: mongoose.Types.ObjectId, ref: 'OptionSummary', required: true}],
     playerSummary: [{type: mongoose.Types.ObjectId, ref: 'PlayerSummary', required: true}],
 });
 
