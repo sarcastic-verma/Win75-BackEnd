@@ -3,6 +3,6 @@ const eventWindowController = require('../controllers/eventWindow-controller');
 
 const router = new Router();
 
-router.get('/:bid', eventWindowController.getEventWindow);
+router.get('/', eventWindowController.createEventWindow);
 
 module.exports = router;

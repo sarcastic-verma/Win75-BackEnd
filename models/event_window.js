@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const eventWindowSchema = new mongoose.Schema({
     date: {
-        type: String,
+        type: Date,
         required: true, unique: true
     },
     startTime: {type: String, required: true},
@@ -11,7 +11,7 @@ const eventWindowSchema = new mongoose.Schema({
         required: true
     },
     slots: [{
-        type:  mongoose.Types.ObjectId, ref: 'Slot',
+        type: mongoose.Types.ObjectId, ref: 'Slot',
         required: true,
     }],
 });

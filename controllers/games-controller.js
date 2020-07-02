@@ -6,7 +6,7 @@ const Game = require('../models/game');
 const User = require('../models/user');
 
 const getGameById = async (req, res, next) => {
-    const gameId = req.params.sid;
+    const gameId = req.params.gid;
     let game;
     try {
         game = await Game.findById(gameId);
@@ -70,6 +70,8 @@ const getGamesByUserId = async (req, res, next) => {
     });
 };
 
+const populateGames = async (req, res, next) => {
+};
 const startGame = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -117,8 +119,22 @@ const startGame = async (req, res, next) => {
 
 function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment, heartTotalInvestment, gameInvestment, playerCount) {
     let businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent;
+    let maxInvestment = Math.max(heartTotalInvestment, spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment);
+    let maxInvestmentArray = [];
+    if (clubTotalInvestment === maxInvestment) {
+        maxInvestmentArray.push({investment: clubTotalInvestment, name: constants.club});
+    }
+    if (diamondTotalInvestment === maxInvestment) {
+        maxInvestmentArray.push({investment: diamondTotalInvestment, name: constants.diamond});
+    }
+    if (spadesTotalInvestment === maxInvestment) {
+        maxInvestmentArray.push({investment: spadesTotalInvestment, name: constants.spade});
+    }
+    if (heartTotalInvestment === maxInvestment) {
+        maxInvestmentArray.push({investment: heartTotalInvestment, name: constants.heart});
+    }
     //////////Case all equal/////////////
-    if (spadesTotalInvestment === heartTotalInvestment === diamondTotalInvestment === clubTotalInvestment || playerCount <= 2) {
+    if (maxInvestmentArray.length === 4 || playerCount <= 2) {
         businessProfit = 0;
         droppedOptions = [constants.spade, constants.heart, constants.diamond, constants.club];
         totalProfit = 0;
@@ -127,18 +143,42 @@ function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInve
         return {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent};
     }
     /////////////////Case 3 equal///////////////
-    else if (heartTotalInvestment < spadesTotalInvestment) {
-
+    else if (maxInvestmentArray.length === 3) {
+        businessProfit = (maxInvestment * 3) / gameInvestment;
+        droppedOptions = [];
+        totalProfit = 0;
+        for (let i = 0; i < maxInvestmentArray.length; i++) {
+            droppedOptions.push(maxInvestmentArray[i].name);
+            totalProfit += maxInvestmentArray[i].investment;
+        }
+        distributableProfit = totalProfit - businessProfit;
+        distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
         return {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent};
     }
     ////////////////Case 2 equal////////////////
-    else if (heartTotalInvestment > spadesTotalInvestment) {
+    else if (maxInvestmentArray.length === 2) {
+        businessProfit = (maxInvestment * 2) / gameInvestment;
+        droppedOptions = [];
+        totalProfit = 0;
+        for (let i = 0; i < maxInvestmentArray.length; i++) {
+            droppedOptions.push(maxInvestmentArray[i].name);
+            totalProfit += maxInvestmentArray[i].investment;
+        }
+        distributableProfit = totalProfit - businessProfit;
+        distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
         return {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent};
     }
     ////////////////case 1 max//////////////////
-    else if (
-        spadesTotalInvestment >= heartTotalInvestment
-    ) {
+    else if (maxInvestmentArray.length === 1) {
+        businessProfit = maxInvestment / gameInvestment;
+        droppedOptions = [];
+        totalProfit = 0;
+        for (let i = 0; i < maxInvestmentArray.length; i++) {
+            droppedOptions.push(maxInvestmentArray[i].name);
+            totalProfit += maxInvestmentArray[i].investment;
+        }
+        distributableProfit = totalProfit - businessProfit;
+        distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
         return {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent};
     }
 }

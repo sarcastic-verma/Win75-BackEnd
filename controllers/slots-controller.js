@@ -85,5 +85,5 @@ const searchCategory = async (req, res, next) => {
 
 };
 exports.searchCategory = searchCategory;
-exports.createCategory = createCategory;
+exports.createSlot = createCategory;
 exports.getAllCategories = getAllCategories;

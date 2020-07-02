@@ -5,9 +5,9 @@ const slotSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'EventWindow', required: true
     },
-    startTime: {type: String, required: true},
+    startTime: {type: Date, required: true},
     endTime: {
-        type: String,
+        type: Date,
         required: true
     },
     games: [{
