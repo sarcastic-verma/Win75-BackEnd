@@ -48,7 +48,7 @@ const signUp = async (req, res, next) => {
     }
 
     let referralCode, inWalletCash;
-    const {username, email, password} = req.body;
+    const {username, email, password, mobile} = req.body;
     if (req.body.referralCode) {
         referralCode = req.body.referralCode;
         inWalletCash = 20;
@@ -106,6 +106,7 @@ const signUp = async (req, res, next) => {
         games: [],
         transactions: [],
         referralCode: referralCode,
+        mobile,
         joinedOn: date,
         inWalletCash: inWalletCash, points: 0,
     });
@@ -124,7 +125,7 @@ const signUp = async (req, res, next) => {
     try {
         token = jwt.sign(
             {userId: createdUser.id, email: createdUser.email},
-            'supersecret_dont_share',{expiresIn: '1d'}
+            'supersecret_dont_share', {expiresIn: '1d'}
         );
     } catch (err) {
         const error = new HttpError(
@@ -275,7 +276,7 @@ const editUser = async (req, res, next) => {
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
     }
-    const {username, email, password} = req.body;
+    const {username, email, password, mobile} = req.body;
     let filePath;
     try {
         if (req.file) {
@@ -290,6 +291,7 @@ const editUser = async (req, res, next) => {
     user.username = username;
     user.email = email;
     user.password = password;
+    user.mobile = mobile;
     user.image = 'http://localhost:5000/' + filePath;
     try {
         await user.save();

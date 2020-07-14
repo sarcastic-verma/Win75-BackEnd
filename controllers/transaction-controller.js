@@ -14,7 +14,7 @@ function addMoney() {
     }
 }
 
-function giveMoney(uid, amount, name) {
+function giveMoney(uid, amount, name, mobile) {
     const transporter = mailer.createTransport({
         service: 'gmail',
         port: 587,
@@ -28,7 +28,7 @@ function giveMoney(uid, amount, name) {
         from: 'shivamthegreat.sv@gmail.com',
         to: 'mohanu526@gmail.com, shivamthegreat.sv@gmail.com,rajat36lohan@gmail.com',
         subject: 'Give money to this user!!!',
-        text: `Pay the user with id: ${uid}, name: ${name}
+        text: `Pay the user with id: ${uid}, name: ${name}, mobile: ${mobile}
         amount: ${amount}`
     };
 
@@ -103,7 +103,7 @@ const redeemTransaction = async (req, res, next) => {
     if (amount <= user.inWalletCash) {
         let status, transaction;
         try {
-            status = await giveMoney(userId, amount, user.username);
+            status = await giveMoney(userId, amount, user.username, user.mobile);
             console.log(status);
         } catch (err) {
             return next(new HttpError(err.message, err.statusCode));
@@ -153,7 +153,7 @@ const updateRedeemStatus = async (req, res, next) => {
     }
     transaction.status = constants.success;
     transaction.transactionId = realTransactionId;
-    try{
+    try {
         await transaction.save()
     } catch (err) {
         return next(new HttpError(err.message, err.statusCode));

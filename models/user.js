@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
     email: {type: String, required: true, unique: true},
     image: {type: String},
     password: {type: String, required: true, minlength: 6},
+    mobile: {type:String,required: true},
     referralCode: {type: String, default: "none"},
     /////
     transactions: [{type: mongoose.Types.ObjectId, ref: 'Transaction'}],
