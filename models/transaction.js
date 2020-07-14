@@ -6,4 +6,4 @@ const transactionSchema = new mongoose.Schema({
     status: {type: String, required: true},
 });
 
-module.exports = new mongoose.model('Transaction', transactionSchema);
+module.exports = mongoose.model('Transaction', transactionSchema);

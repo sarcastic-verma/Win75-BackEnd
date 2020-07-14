@@ -13,6 +13,6 @@ router.get(
     '/start/:gid',
     gameController.startGame
 );
-router.post('/endgame:/gid', gameController.endGame);
+router.get('/endgame/:gid', gameController.endGame);
 
 module.exports = router;

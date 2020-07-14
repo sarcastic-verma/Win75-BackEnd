@@ -124,7 +124,7 @@ const signUp = async (req, res, next) => {
     try {
         token = jwt.sign(
             {userId: createdUser.id, email: createdUser.email},
-            'supersecret_dont_share',
+            'supersecret_dont_share',{expiresIn: '1d'}
         );
     } catch (err) {
         const error = new HttpError(
@@ -160,6 +160,9 @@ const login = async (req, res, next) => {
             403
         );
         return next(error);
+        // res.json(
+        //     {error: error, existingUser}
+        // );
     }
 
     let isValidPassword = false;
@@ -302,7 +305,22 @@ const editUser = async (req, res, next) => {
             {getters: true})
     });
 };
+const getLeaderBoard = async (req, res, next) => {
+    let users;
+    try {
+        users = await User.find({}, '-password');
+    } catch (err) {
+        const error = new HttpError(
+            'Fetching users failed, please try again later.',
+            500
+        );
+        return next(error);
+    }
+    users.sort((a, b) => Number(b.totalAmountWon) - Number(a.totalAmountWon));
+    await res.json({users: users.map(user => user.toObject({getters: true}))});
+};
 exports.getUsers = getUsers;
+exports.getLeaderBoard = getLeaderBoard;
 exports.editUser = editUser;
 exports.signup = signUp;
 exports.login = login;

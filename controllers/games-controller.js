@@ -70,8 +70,7 @@ const getGamesByUserId = async (req, res, next) => {
     });
 };
 
-const populateGames = async (req, res, next) => {
-};
+
 const startGame = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -144,33 +143,79 @@ function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInve
     }
     /////////////////Case 3 equal///////////////
     else if (maxInvestmentArray.length === 3) {
-        businessProfit = (maxInvestment * 3) / gameInvestment;
+        maxInvestment = maxInvestment * 3;
+        businessProfit = (maxInvestment ** 2) / gameInvestment;
+        let acceptedOptions = [{
+            name: constants.club, investment: clubTotalInvestment
+        }, {
+            name: constants.heart, investment: heartTotalInvestment
+        }, {
+            name: constants.spade, investment: spadesTotalInvestment
+        }, {
+            name: constants.diamond, investment: diamondTotalInvestment
+        }];
         droppedOptions = [];
         totalProfit = 0;
         for (let i = 0; i < maxInvestmentArray.length; i++) {
+            acceptedOptions.filter(item => item !== maxInvestmentArray[i]);
             droppedOptions.push(maxInvestmentArray[i].name);
             totalProfit += maxInvestmentArray[i].investment;
         }
-        distributableProfit = totalProfit - businessProfit;
-        distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
+        let specialCondition = false;
+        acceptedOptions.forEach((element) => {
+            specialCondition = element.investment === 0;
+        });
+        if (specialCondition) {
+            droppedOptions = Math.random() >= 0.5 ? droppedOptions.pop() : droppedOptions.shift();
+            businessProfit = businessProfit / 3;
+            distributableProfit = totalProfit - businessProfit;
+            distributableProfitPercent = 33.0;
+        } else {
+            distributableProfit = totalProfit - businessProfit;
+            distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
+        }
         return {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent};
     }
     ////////////////Case 2 equal////////////////
     else if (maxInvestmentArray.length === 2) {
-        businessProfit = (maxInvestment * 2) / gameInvestment;
+        maxInvestment = maxInvestment * 2;
+        businessProfit = (maxInvestment ** 2) / gameInvestment;
         droppedOptions = [];
+        let acceptedOptions = [{
+            investment: clubTotalInvestment, name: constants.club
+        }, {
+            investment: heartTotalInvestment, name: constants.heart
+        }, {
+            investment: spadesTotalInvestment, name: constants.spade
+        }, {
+            investment: diamondTotalInvestment, name: constants.diamond
+        }];
         totalProfit = 0;
         for (let i = 0; i < maxInvestmentArray.length; i++) {
+            acceptedOptions = acceptedOptions.filter(item => item.name !== maxInvestmentArray[i].name);
             droppedOptions.push(maxInvestmentArray[i].name);
             totalProfit += maxInvestmentArray[i].investment;
         }
-        distributableProfit = totalProfit - businessProfit;
-        distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
+        // console.log(acceptedOptions);
+        let specialCondition = false;
+        acceptedOptions.forEach((element) => {
+            specialCondition = element.investment === 0;
+        });
+        // console.log(specialCondition);
+        if (specialCondition) {
+            droppedOptions = Math.random() >= 0.5 ? droppedOptions.pop() : droppedOptions.shift();
+            businessProfit = businessProfit / 2;
+            distributableProfit = totalProfit - businessProfit;
+            distributableProfitPercent = 50.0;
+        } else {
+            distributableProfit = totalProfit - businessProfit;
+            distributableProfitPercent = (maxInvestment * 100) / gameInvestment;
+        }
         return {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent};
     }
     ////////////////case 1 max//////////////////
     else if (maxInvestmentArray.length === 1) {
-        businessProfit = maxInvestment / gameInvestment;
+        businessProfit = maxInvestment ** 2 / gameInvestment;
         droppedOptions = [];
         totalProfit = 0;
         for (let i = 0; i < maxInvestmentArray.length; i++) {
@@ -195,26 +240,17 @@ const endGame = async (req, res, next) => {
         const error = new HttpError(err.message, err.statusCode);
         return next(error);
     }
-    const {
-        playerCount, spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment, heartTotalInvestment, playerSummary, optionSummary, gameInvestment,
-    } = req.body;
 
-    const {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent} = calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment, heartTotalInvestment, gameInvestment, playerCount);
-    game.heartTotalInvestment = heartTotalInvestment;
-    game.spadesTotalInvestment = spadesTotalInvestment;
-    game.clubTotalInvestment = clubTotalInvestment;
-    game.diamondTotalInvestment = diamondTotalInvestment;
-    game.playerCount = playerCount;
-    game.gameInvestment = gameInvestment;
+    const {businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent} = calcResult(game.spadesTotalInvestment, game.clubTotalInvestment, game.diamondTotalInvestment, game.heartTotalInvestment, game.gameInvestment, game.playerCount);
     /////////////////////////////
     game.businessProfit = businessProfit;
     game.distributableProfit = distributableProfit;
     game.distributableProfitPercent = distributableProfitPercent;
     game.totalProfit = totalProfit;
     game.droppedOptions = droppedOptions;
+    game.isComplete = true;
     ///////////////////////////////////
-    game.optionSummary = optionSummary;
-    game.playerSummary = playerSummary;
+    // game.optionSummary = optionSummary;
 
     try {
         const sess = await mongoose.startSession();
@@ -231,6 +267,9 @@ const endGame = async (req, res, next) => {
         return next(error);
     }
 
+    await res.json(
+        {game: game}
+    )
 };
 // Total_Distributable_Profit:750,
 //     business_profit: 625
@@ -257,5 +296,3 @@ exports.getGameById = getGameById;
 exports.getGamesByUserId = getGamesByUserId;
 exports.startGame = startGame;
 exports.endGame = endGame;
-
-

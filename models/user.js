@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     image: {type: String},
     password: {type: String, required: true, minlength: 6},
     referralCode: {type: String, default: "none"},
+    /////
     transactions: [{type: mongoose.Types.ObjectId, ref: 'Transaction'}],
     games: [{type: mongoose.Types.ObjectId, ref: 'Game'}],
     points: {type: Number, default: 50},

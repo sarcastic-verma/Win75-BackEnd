@@ -1,5 +1,9 @@
-const express = require('express');
-const playerSummaryController = require('../controllers/playerSummary-controller');
-const checkAuth = require('../middleware/check-auth');
-
-const router = express.Router();
+// const {Router} = require('express');
+// const optionSummaryController = require('../controllers/optionSummary-controller');
+// const checkAuth = require('../middleware/check-auth');
+//
+// const router = new Router();
+//
+// router.use(checkAuth);
+//
+// // router.post('/makeOptionSummary', optionSummaryController.makeOptionSummary);
