@@ -21,6 +21,7 @@ router.post(
         check('email')
             .normalizeEmail()
             .isEmail(),
+        check('mobile').not().isEmpty(),
         check('password').isLength({min: 6})
     ],
     usersController.signup
@@ -29,7 +30,7 @@ router.post(
 router.post('/login', usersController.login);
 router.patch('/forgotPassword/:email', [
     check('password').isLength({min: 6})
-],usersController.forgotPassword);
+], usersController.forgotPassword);
 
 router.use(checkAuth);
 router.patch('/edit/:uid', fileUpload.single('image'),
@@ -40,6 +41,7 @@ router.patch('/edit/:uid', fileUpload.single('image'),
         check('email')
             .normalizeEmail()
             .isEmail(),
+        check('mobile').not().isEmpty(),
         check('password').isLength({min: 6})
     ], usersController.editUser);
 module.exports = router;

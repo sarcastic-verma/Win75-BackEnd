@@ -83,7 +83,8 @@ const makePlayerSummary = async (req, res, next) => {
     if (game) {
         // console.log(game);
         let playerSummary;
-        const {totalInvestment, optedOptions} = req.body;
+        const {optedOptions} = req.body;
+        const totalInvestment = optedOptions.length * game.betValue;
         if (totalInvestment > user.inWalletCash) {
             return next(new HttpError("Paise ni h iss user pr", 501));
         }
