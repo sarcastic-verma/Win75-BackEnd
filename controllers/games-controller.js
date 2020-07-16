@@ -71,50 +71,50 @@ const getGamesByUserId = async (req, res, next) => {
 };
 
 
-const startGame = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid inputs passed, please check your data.', 422)
-        );
-    }
-    const loggedInUserId = req.userData.userId;
-    const {} = req.body;
-    const createdGame = new Game({});
-
-    let user;
-    try {
-        user = await User.findById(loggedInUserId);
-    } catch (err) {
-        const error = new HttpError(
-            err.message + "okdlks",
-            500
-        );
-        return next(error);
-    }
-
-    if (!user) {
-        const error = new HttpError('Could not find user for provided id.', 404);
-        return next(error);
-    }
-
-    try {
-        const sess = await mongoose.startSession();
-        sess.startTransaction();
-        await createdGame.save();
-        user.games.push(createdGame);
-        await user.save();
-        await sess.commitTransaction();
-    } catch (err) {
-        const error = new HttpError(
-            err.message + "lol",
-            500
-        );
-        return next(error);
-    }
-
-    res.status(201).json({story: createdGame});
-};
+// const startGame = async (req, res, next) => {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//         return next(
+//             new HttpError('Invalid inputs passed, please check your data.', 422)
+//         );
+//     }
+//     const loggedInUserId = req.userData.userId;
+//     const {} = req.body;
+//     const createdGame = new Game({});
+//
+//     let user;
+//     try {
+//         user = await User.findById(loggedInUserId);
+//     } catch (err) {
+//         const error = new HttpError(
+//             err.message + "okdlks",
+//             500
+//         );
+//         return next(error);
+//     }
+//
+//     if (!user) {
+//         const error = new HttpError('Could not find user for provided id.', 404);
+//         return next(error);
+//     }
+//
+//     try {
+//         const sess = await mongoose.startSession();
+//         sess.startTransaction();
+//         await createdGame.save();
+//         user.games.push(createdGame);
+//         await user.save();
+//         await sess.commitTransaction();
+//     } catch (err) {
+//         const error = new HttpError(
+//             err.message + "lol",
+//             500
+//         );
+//         return next(error);
+//     }
+//
+//     res.status(201).json({story: createdGame});
+// };
 
 function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment, heartTotalInvestment, gameInvestment, playerCount) {
     let businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent;
@@ -294,5 +294,5 @@ const endGame = async (req, res, next) => {
 
 exports.getGameById = getGameById;
 exports.getGamesByUserId = getGamesByUserId;
-exports.startGame = startGame;
+// exports.startGame = startGame;
 exports.endGame = endGame;

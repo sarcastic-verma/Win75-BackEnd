@@ -9,10 +9,10 @@ router.get('/:gid', gameController.getGameById);
 
 router.get('/user/:uid', gameController.getGamesByUserId);
 
-router.get(
-    '/start/:gid',
-    gameController.startGame
-);
+// router.get(
+//     '/start/:gid',
+//     gameController.startGame
+// );
 router.get('/endgame/:gid', gameController.endGame);
 
 module.exports = router;
