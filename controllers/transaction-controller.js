@@ -14,7 +14,7 @@ function addMoney() {
     }
 }
 
-function giveMoney(uid, amount, name, mobile) {
+function giveMoney(tid, amount, name, mobile) {
     const transporter = mailer.createTransport({
         service: 'gmail',
         port: 587,
@@ -28,7 +28,7 @@ function giveMoney(uid, amount, name, mobile) {
         from: 'shivamthegreat.sv@gmail.com',
         to: 'mohanu526@gmail.com, shivamthegreat.sv@gmail.com,rajat36lohan@gmail.com',
         subject: 'Give money to this user!!!',
-        text: `Pay the user with id: ${uid}, name: ${name}, mobile: ${mobile}
+        text: `Pay the transaction with id: ${tid}, name: ${name}, mobile: ${mobile}
         amount: ${amount}`
     };
 
@@ -41,8 +41,6 @@ function giveMoney(uid, amount, name, mobile) {
             console.log("yay");
         }
     });
-    return [constants.inProgress, "Not yet returned"];
-
 }
 
 const addTransaction = async (req, res, next) => {
@@ -101,33 +99,31 @@ const redeemTransaction = async (req, res, next) => {
     }
     const amount = req.body.amount;
     if (amount <= user.inWalletCash) {
-        let status, transaction;
-        try {
-            status = await giveMoney(userId, amount, user.username, user.mobile);
-            console.log(status);
-        } catch (err) {
-            return next(new HttpError(err.message, err.statusCode));
-        }
-        if (status[0] === constants.inProgress) {
-            user.inWalletCash -= amount;
-            transaction = new Transaction({
-                userId,
-                transactionId: status[1],
-                amount,
-                status: status[0]
-            });
-        } else if (status[0] === constants.fail) {
-            transaction = new Transaction({
-                userId,
-                transactionId: status[1],
-                amount,
-                status: status[0]
-            });
-        }
+        let transaction, transactionId;
+        user.inWalletCash -= amount;
+        transaction = new Transaction({
+            userId,
+            transactionId: "not yet returned",
+            amount,
+            status: constants.inProgress
+        });
         try {
             const sess = await mongoose.startSession();
             sess.startTransaction();
-            await transaction.save();
+            await transaction.save(
+                async function (err, transaction_done) {
+                    try {
+                        transactionId = transaction_done.id;
+                        try {
+                            await giveMoney(transactionId, amount, user.username, user.mobile);
+                        } catch (err) {
+                            return next(new HttpError(err.message, err.statusCode));
+                        }
+                    } catch (error) {
+                        console.log(error.message);
+                    }
+                }
+            );
             await user.transactions.push(transaction);
             await user.save();
             await sess.commitTransaction();
