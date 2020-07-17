@@ -108,7 +108,7 @@ const signUp = async (req, res, next) => {
         referralCode: referralCode,
         mobile,
         joinedOn: date,
-        inWalletCash: inWalletCash, points: 0,
+        inWalletCash: inWalletCash,
     });
 
     try {
@@ -137,7 +137,7 @@ const signUp = async (req, res, next) => {
 
     await res
         .status(201)
-        .json({userId: createdUser.id, email: createdUser.email, token: token});
+        .json({user: createdUser, email: createdUser.email, token: token});
 };
 
 const login = async (req, res, next) => {
@@ -200,8 +200,7 @@ const login = async (req, res, next) => {
     }
 
     await res.json({
-        userId: existingUser.id,
-        email: existingUser.email,
+        user: existingUser,
         token: token
     });
 };
