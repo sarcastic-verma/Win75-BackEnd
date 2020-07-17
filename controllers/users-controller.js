@@ -288,9 +288,19 @@ const editUser = async (req, res, next) => {
         const error = new HttpError(err.message + "olol", err.code);
         return next(error);
     }
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(password, 12);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not create user, please try again.',
+            500
+        );
+        return next(error);
+    }
+    user.password = hashedPassword;
     user.username = username;
     user.email = email;
-    user.password = password;
     user.mobile = mobile;
     user.image = 'http://localhost:5000/' + filePath;
     try {
