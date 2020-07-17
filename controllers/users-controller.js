@@ -1,5 +1,7 @@
 const {validationResult} = require('express-validator');
 const bcrypt = require('bcryptjs');
+const mailer = require('nodemailer');
+
 const jwt = require('jsonwebtoken');
 
 const HttpError = require('../models/http-error');
@@ -204,6 +206,37 @@ const login = async (req, res, next) => {
         token: token
     });
 };
+
+function sendPassChangeMail(randomString) {
+    const transporter = mailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        auth: {
+            user: 'shivamthegreat.sv@gmail.com',
+            pass: 'perfectlybalanced'
+        }
+    });
+
+    const mailOptions = {
+        from: 'shivamthegreat.sv@gmail.com',
+        to: 'mohanu526@gmail.com, shivamthegreat.sv@gmail.com,rajat36lohan@gmail.com',
+        subject: "Don't share this mail with anyone",
+        text: `Use this ${randomString} as your otp!!!! We will never call you to ask for this, so please don't give it someone who said that we asked it!!
+        
+        For the love of the god please don't share this otp!!!!!!!!!`
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+            // return [constants.fail, "Mail hi ni gyi"]
+        } else {
+            // return [constants.inProgress, "Not yet returned"];
+            console.log("yay");
+        }
+    });
+}
+
 const forgotPassword = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -220,8 +253,6 @@ const forgotPassword = async (req, res, next) => {
             email
         });
         console.log(user);
-        // User.findByIdAndUpdate(userId, {password: password}, {}, () => {
-        // });
     } catch (err) {
         const error = new HttpError("Something went wrong, please try again later.", err.status);
         return next(error);
@@ -256,7 +287,7 @@ const forgotPassword = async (req, res, next) => {
     });
 };
 const editUser = async (req, res, next) => {
-    const userId = req.params.uid;
+    const userId = req.userData.userId;
     let user;
     try {
         user = await User.findById(userId)
@@ -275,7 +306,7 @@ const editUser = async (req, res, next) => {
             new HttpError('Invalid inputs passed, please check your data.', 422)
         );
     }
-    const {username, email, password, mobile} = req.body;
+    const {username, email, mobile} = req.body;
     let filePath;
     try {
         if (req.file) {
@@ -287,17 +318,6 @@ const editUser = async (req, res, next) => {
         const error = new HttpError(err.message + "olol", err.code);
         return next(error);
     }
-    let hashedPassword;
-    try {
-        hashedPassword = await bcrypt.hash(password, 12);
-    } catch (err) {
-        const error = new HttpError(
-            'Could not create user, please try again.',
-            500
-        );
-        return next(error);
-    }
-    user.password = hashedPassword;
     user.username = username;
     user.email = email;
     user.mobile = mobile;
@@ -330,10 +350,74 @@ const getLeaderBoard = async (req, res, next) => {
     users.sort((a, b) => Number(b.totalAmountWon) - Number(a.totalAmountWon));
     await res.json({users: users.map(user => user.toObject({getters: true}))});
 };
+const changePassword = async (req, res, next) => {
+    const userId = req.userData.userId;
+    console.log(userId);
+    let user;
+    try {
+        user = await User.findById(userId)
+    } catch (err) {
+        const error = new HttpError("Something went wrong can't get user.", 500);
+        return next(error);
+    }
+    if (!user) {
+        const error = new HttpError("Can't find user for provided id", 404);
+        return next(error);
+    }
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return next(
+            new HttpError('Invalid inputs passed, please check your data.', 422)
+        );
+    }
+    const newPassword = req.body.newPassword;
+    const currentPassword = req.body.currentPassword;
+    let isValidPassword = false;
+    try {
+        isValidPassword = await bcrypt.compare(currentPassword, user.password);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not log you in, please check your credentials and try again.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!isValidPassword) {
+        const error = new HttpError(
+            'Wrong Password!!',
+            403
+        );
+        return next(error);
+    }
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(newPassword, 12);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not update password, please try again.',
+            500
+        );
+        return next(error);
+    }
+    user.password = hashedPassword;
+    try {
+        await user.save();
+    } catch (err) {
+        const error = new HttpError("Error saving user, try again later.", err.status);
+        return next(error);
+    }
+
+    res.status(200).json({
+        message: "Password updated"
+    });
+};
 exports.getUsers = getUsers;
 exports.getLeaderBoard = getLeaderBoard;
 exports.editUser = editUser;
 exports.signup = signUp;
 exports.login = login;
+exports.changePassword = changePassword;
 exports.getUserById = getUserById;
 exports.forgotPassword = forgotPassword;

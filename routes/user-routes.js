@@ -33,7 +33,8 @@ router.patch('/forgotPassword/:email', [
     check('password').isLength({min: 6})
 ], usersController.forgotPassword);
 router.use(checkAuth);
-router.patch('/edit/:uid', fileUpload.single('image'),
+router.patch('/changePassword', [check('newPassword').isLength({min: 6})], usersController.changePassword);
+router.patch('/edit', fileUpload.single('image'),
     [
         check('username')
             .not()
