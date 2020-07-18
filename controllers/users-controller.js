@@ -207,36 +207,6 @@ const login = async (req, res, next) => {
     });
 };
 
-function sendPassChangeMail(randomString) {
-    const transporter = mailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        auth: {
-            user: 'shivamthegreat.sv@gmail.com',
-            pass: 'perfectlybalanced'
-        }
-    });
-
-    const mailOptions = {
-        from: 'shivamthegreat.sv@gmail.com',
-        to: 'mohanu526@gmail.com, shivamthegreat.sv@gmail.com,rajat36lohan@gmail.com',
-        subject: "Don't share this mail with anyone",
-        text: `Use this ${randomString} as your otp!!!! We will never call you to ask for this, so please don't give it someone who said that we asked it!!
-        
-        For the love of the god please don't share this otp!!!!!!!!!`
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-            // return [constants.fail, "Mail hi ni gyi"]
-        } else {
-            // return [constants.inProgress, "Not yet returned"];
-            console.log("yay");
-        }
-    });
-}
-
 const forgotPassword = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
