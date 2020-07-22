@@ -135,6 +135,51 @@ const redeemTransaction = async (req, res, next) => {
         return next(new HttpError("Redeem amount unrealistic", 404));
     }
 };
+const addPoints = async (req, res, next) => {
+    const userId = req.userData.userId;
+    const amount = req.body.amount;
+    let user;
+    try {
+        user = await User.findById(userId);
+    } catch (err) {
+        return next(new HttpError(err.message, err.statusCode));
+    }
+    if (!user) {
+        return next(new HttpError("User not found for the given id!", 404));
+    }
+    user.points += amount;
+    try {
+        await user.save();
+    } catch (err) {
+        return next(new HttpError("Something went wrong can't update user", 404));
+    }
+    await res.json({message: "added"});
+};
+
+const reducePoints = async (req, res, next) => {
+    const userId = req.userData.userId;
+    const amount = req.body.amount;
+    let user;
+    try {
+        user = await User.findById(userId);
+    } catch (err) {
+        return next(new HttpError(err.message, err.statusCode));
+    }
+    if (!user) {
+        return next(new HttpError("User not found for the given id!", 404));
+    }
+    if (user.points < amount) {
+        return next(new HttpError("Itne points ni h iss parr", 404));
+    }
+    user.points -= amount;
+    try {
+        await user.save();
+    } catch (err) {
+        return next(new HttpError("Something went wrong can't update user", 404));
+    }
+    await res.json({message: "reduced"});
+};
+
 const updateRedeemStatus = async (req, res, next) => {
     const transactionId = req.params.tid;
     const realTransactionId = req.body.realTransactionId;
@@ -159,3 +204,5 @@ const updateRedeemStatus = async (req, res, next) => {
 exports.addTransaction = addTransaction;
 exports.updateRedeemStatus = updateRedeemStatus;
 exports.redeemTransaction = redeemTransaction;
+exports.reducePoints = reducePoints;
+exports.addPoints = addPoints;

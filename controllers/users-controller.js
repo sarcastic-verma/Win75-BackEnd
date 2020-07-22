@@ -41,6 +41,49 @@ const getUserById = async (req, res, next) => {
     });
 };
 
+const forgotPassword = async (req, res, next) => {
+    const email = req.params.email;
+    let password = Math.random().toString().substring(0, 3) + Math.random().toString().slice(0, 3) + 'win';
+    let user;
+    try {
+        user = await User.findOne({
+            email
+        });
+    } catch (err) {
+        const error = new HttpError("Something went wrong, please try again later.", err.status);
+        return next(error);
+    }
+    if (!user) {
+        const error = new HttpError(
+            'You are not registered!!!',
+            403
+        );
+        return next(error);
+    }
+    await sendMail(password, email);
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(password, 12);
+    } catch (err) {
+        const error = new HttpError(
+            'Could not create user, please try again.',
+            500
+        );
+        return next(error);
+    }
+    user.password = hashedPassword;
+    try {
+        await user.save();
+    } catch (err) {
+        const error = new HttpError("Error saving user, try again later.", err.status);
+        return next(error);
+    }
+
+    res.status(200).json({
+        message: "Password updated"
+    });
+
+};
 const signUp = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -127,7 +170,7 @@ const signUp = async (req, res, next) => {
     try {
         token = jwt.sign(
             {userId: createdUser.id, email: createdUser.email},
-            'supersecret_dont_share', {expiresIn: "1d"}
+            'supersecret_dont_share',
         );
     } catch (err) {
         const error = new HttpError(
@@ -191,7 +234,7 @@ const login = async (req, res, next) => {
     try {
         token = jwt.sign(
             {userId: existingUser.id, email: existingUser.email,},
-            'supersecret_dont_share', {expiresIn: "1d"}
+            'supersecret_dont_share',
         );
     } catch (err) {
         const error = new HttpError(
@@ -207,55 +250,35 @@ const login = async (req, res, next) => {
     });
 };
 
-const forgotPassword = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid Inputs passed', 422)
-        );
-    }
-    const email = req.params.email;
-    const password = req.body.password;
-    let user;
-    try {
-        console.log(email);
-        user = await User.findOne({
-            email
-        });
-        console.log(user);
-    } catch (err) {
-        const error = new HttpError("Something went wrong, please try again later.", err.status);
-        return next(error);
-    }
-    if (!user) {
-        const error = new HttpError(
-            'You are not registered!!!',
-            403
-        );
-        return next(error);
-    }
-    let hashedPassword;
-    try {
-        hashedPassword = await bcrypt.hash(password, 12);
-    } catch (err) {
-        const error = new HttpError(
-            'Could not create user, please try again.',
-            500
-        );
-        return next(error);
-    }
-    user.password = hashedPassword;
-    try {
-        await user.save();
-    } catch (err) {
-        const error = new HttpError("Error saving user, try again later.", err.status);
-        return next(error);
-    }
 
-    res.status(200).json({
-        message: "Password updated"
+function sendMail(code, email) {
+    const transporter = mailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        auth: {
+            user: 'shivamthegreat.sv@gmail.com',
+            pass: 'perfectlybalanced'
+        }
     });
-};
+
+    const mailOptions = {
+        from: 'shivamthegreat.sv@gmail.com',
+        to: email,
+        subject: '',
+        text: `${code} 
+        Use this as a temporary password, please change it when you login. We w`
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+            // return [constants.fail, "Mail hi ni gyi"]
+        } else {
+            // return [constants.inProgress, "Not yet returned"];
+            console.log("yay");
+        }
+    });
+}
+
 const editUser = async (req, res, next) => {
     const userId = req.userData.userId;
     let user;
@@ -317,7 +340,7 @@ const getLeaderBoard = async (req, res, next) => {
         );
         return next(error);
     }
-    users.sort((a, b) => Number(b.totalAmountWon) - Number(a.totalAmountWon));
+    users = users.sort((a, b) => Number(b.totalAmountWon) - Number(a.totalAmountWon));
     await res.json({users: users.map(user => user.toObject({getters: true}))});
 };
 const changePassword = async (req, res, next) => {
@@ -388,6 +411,6 @@ exports.getLeaderBoard = getLeaderBoard;
 exports.editUser = editUser;
 exports.signup = signUp;
 exports.login = login;
+exports.forgotPassword = forgotPassword;
 exports.changePassword = changePassword;
 exports.getUserById = getUserById;
-exports.forgotPassword = forgotPassword;

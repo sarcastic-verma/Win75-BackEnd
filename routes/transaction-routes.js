@@ -9,5 +9,7 @@ router.use(checkAuth);
 
 router.post('/add', transactionController.addTransaction);
 router.post('/redeem', transactionController.redeemTransaction);
+router.post('/reducePoints',transactionController.reducePoints);
+router.post('/addPoints', transactionController.addPoints);
 
 module.exports = router;

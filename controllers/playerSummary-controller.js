@@ -64,9 +64,7 @@ const getPlayerSummary = async (req, res, next) => {
         return next(new HttpError("Error fetching summary please try again later!!", 404));
     }
     if (!foundPlayerSummary) {
-        await res.json({
-            message: "No summary for this Id."
-        });
+        return next(new HttpError("No summary found for this ID!!!", 404));
     }
     await res.json({foundPlayerSummary: foundPlayerSummary});
 };
@@ -121,9 +119,7 @@ const makePlayerSummary = async (req, res, next) => {
             message: "player created", playerSummary: playerSummary
         });
     } else {
-        await res.json({
-            message: "game dosen't exist"
-        });
+        return next(new HttpError("Game not found", 404));
     }
 };
 const updatePlayerSummary = async (req, res, next) => {

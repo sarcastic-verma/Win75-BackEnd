@@ -69,53 +69,6 @@ const getGamesByUserId = async (req, res, next) => {
         )
     });
 };
-
-
-// const startGame = async (req, res, next) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return next(
-//             new HttpError('Invalid inputs passed, please check your data.', 422)
-//         );
-//     }
-//     const loggedInUserId = req.userData.userId;
-//     const {} = req.body;
-//     const createdGame = new Game({});
-//
-//     let user;
-//     try {
-//         user = await User.findById(loggedInUserId);
-//     } catch (err) {
-//         const error = new HttpError(
-//             err.message + "okdlks",
-//             500
-//         );
-//         return next(error);
-//     }
-//
-//     if (!user) {
-//         const error = new HttpError('Could not find user for provided id.', 404);
-//         return next(error);
-//     }
-//
-//     try {
-//         const sess = await mongoose.startSession();
-//         sess.startTransaction();
-//         await createdGame.save();
-//         user.games.push(createdGame);
-//         await user.save();
-//         await sess.commitTransaction();
-//     } catch (err) {
-//         const error = new HttpError(
-//             err.message + "lol",
-//             500
-//         );
-//         return next(error);
-//     }
-//
-//     res.status(201).json({story: createdGame});
-// };
-
 function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment, heartTotalInvestment, gameInvestment, playerCount) {
     let businessProfit, droppedOptions, totalProfit, distributableProfit, distributableProfitPercent;
     let maxInvestment = Math.max(heartTotalInvestment, spadesTotalInvestment, clubTotalInvestment, diamondTotalInvestment);
@@ -271,26 +224,6 @@ const endGame = async (req, res, next) => {
         {game: game}
     )
 };
-// Total_Distributable_Profit:750,
-//     business_profit: 625
-// members_profit: 125
-// Distributable_Profit_percent:83.33%
-//
-// user_wise_summary:
-// [
-//     {"User":"U1", opted_options:[A,B,C,D], Accepted_options:[D], Total_investment:200, Profitable_investment:50, proportioned_gain:41.66, Net_Credit:91.66},
-//     {"User":"U2", opted_options:[D], Accepted_options:[D], Profitable_investment:50, proportioned_gain:41.66},
-//     {"User":"U3", opted_options:[A], Accepted_options:[], Profitable_investment:0, proportioned_gain:0},
-//     {"User":"U4", opted_options:[C], Accepted_options:[], Profitable_investment:0, proportioned_gain:0}
-// ],
-//
-//     option_wise_summary:
-// [
-//     {"Option":"A", users:[U1, U3, U5, U10, U14], total:250},
-//     {"Option":"B", users:[U1, U7, U9, U11, U15], total:250},
-//     {"Option":"C", users:[U1, U4, U6, U8, U13], total:250},
-//     {"Option":"D", users:[U1, U2, U12], total:150}
-// ],
 
 exports.getGameById = getGameById;
 exports.getGamesByUserId = getGamesByUserId;
