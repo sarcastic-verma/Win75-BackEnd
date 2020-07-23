@@ -1,11 +1,12 @@
-const {router} = require('express');
+const {Router} = require('express');
 const {check} = require('express-validator');
 
 const usersController = require('../controllers/users-controller');
 const fileUpload = require('../middleware/file-upload');
 const checkAuth = require('../middleware/check-auth');
 
-// const router = express.Router();
+const router = new Router();
+
 
 router.get('/', usersController.getUsers);
 router.get('/leaderBoard', usersController.getLeaderBoard);
@@ -29,7 +30,7 @@ router.post(
 );
 
 router.post('/login', usersController.login);
-router.get('/forgotPassword/:email',usersController.forgotPassword);
+router.get('/forgotPassword/:email', usersController.forgotPassword);
 router.use(checkAuth);
 router.patch('/changePassword', [check('newPassword').isLength({min: 6})], usersController.changePassword);
 router.patch('/edit', fileUpload.single('image'),
