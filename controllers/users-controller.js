@@ -146,7 +146,7 @@ const signUp = async (req, res, next) => {
     const createdUser = new User({
         username,
         email,
-        image: 'https://win75.herokuapp.com' + filePath,
+        image: 'https://win75.herokuapp.com/' + filePath,
         password: hashedPassword,
         games: [],
         transactions: [],
