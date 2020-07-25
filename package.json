@@ -4,14 +4,14 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app"
+    "start": "node app.js"
   },
+  "author": "",
+  "license": "ISC",
   "engines": {
     "node": "12.16.2",
     "npm": "6.14.1"
   },
-  "author": "",
-  "license": "ISC",
   "description": "",
   "dependencies": {
     "axios": "^0.19.0",
