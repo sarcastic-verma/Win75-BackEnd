@@ -6,12 +6,7 @@ const Transaction = require('../models/transaction');
 const constants = require('../constants');
 
 function addMoney() {
-    let a = Math.random();
-    if (a >= 0.3) {
-        return [constants.success, "succ101101"];
-    } else {
-        return [constants.fail, "fail12100"];
-    }
+    return [constants.success, "succ101101"];
 }
 
 function giveMoney(tid, amount, name, mobile) {
@@ -19,13 +14,13 @@ function giveMoney(tid, amount, name, mobile) {
         service: 'gmail',
         port: 587,
         auth: {
-            user: 'shivamthegreat.sv@gmail.com',
-            pass: 'perfectlybalanced'
+            user: process.env.Email_Name,
+            pass: process.env.Email_Pass
         }
     });
 
     const mailOptions = {
-        from: 'shivamthegreat.sv@gmail.com',
+        from: process.env.Email_Name,
         to: 'mohanu526@gmail.com, shivamthegreat.sv@gmail.com,rajat36lohan@gmail.com',
         subject: 'Give money to this user!!!',
         text: `Pay the transaction with id: ${tid}, name: ${name}, mobile: ${mobile}

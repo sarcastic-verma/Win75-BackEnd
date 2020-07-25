@@ -59,7 +59,7 @@ app.use((error, req, res, next) => {
 
 mongoose
     .connect(
-        `mongodb+srv://admin101:ahujacement@cluster0-dhan1.gcp.mongodb.net/win75`, {
+        `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0-dhan1.gcp.mongodb.net/${process.env.DB_Name}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useCreateIndex: true

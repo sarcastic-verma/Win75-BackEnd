@@ -1,0 +1,10 @@
+{
+  "env": {
+    "DB_USER":"admin101",
+    "DB_PASS":"ahujacement",
+    "DB_Name":"win75",
+    "Email_Name":"shivamthegreat.sv@gmail.com",
+    "Email_Pass":"perfectlybalanced",
+    "Jwt_Key":"wubbaLubbaDUBDUB*BURPS*"
+  }
+}

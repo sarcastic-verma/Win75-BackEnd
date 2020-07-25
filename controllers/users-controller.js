@@ -170,7 +170,7 @@ const signUp = async (req, res, next) => {
     try {
         token = jwt.sign(
             {userId: createdUser.id, email: createdUser.email},
-            'supersecret_dont_share',
+            process.env.Jwt_Key,
         );
     } catch (err) {
         const error = new HttpError(
@@ -234,7 +234,7 @@ const login = async (req, res, next) => {
     try {
         token = jwt.sign(
             {userId: existingUser.id, email: existingUser.email,},
-            'supersecret_dont_share',
+            process.env.Jwt_Key,
         );
     } catch (err) {
         const error = new HttpError(
@@ -256,17 +256,18 @@ function sendMail(code, email) {
         service: 'gmail',
         port: 587,
         auth: {
-            user: 'shivamthegreat.sv@gmail.com',
-            pass: 'perfectlybalanced'
+            user: process.env.Email_Name,
+            pass: process.env.Email_Pass
         }
     });
 
     const mailOptions = {
-        from: 'shivamthegreat.sv@gmail.com',
+        from: process.env.Email_Name,
         to: email,
         subject: '',
         text: `${code} 
-        Use this as a temporary password, please change it when you login. We w`
+        Use this as a temporary password, please change it when you login. 
+        We will not be responsible if it is leaked.`
     };
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {

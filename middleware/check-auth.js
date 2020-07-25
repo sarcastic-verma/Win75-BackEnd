@@ -11,11 +11,11 @@ module.exports = (req, res, next) => {
         if (!token) {
             return next(Error('Authentication failed!'));
         }
-        const decodedToken = jwt.verify(token, 'supersecret_dont_share');
+        const decodedToken = jwt.verify(token, process.env.Jwt_Key);
         req.userData = {userId: decodedToken.userId};
         next();
     } catch (err) {
-        const error = new HttpError(err.message, 403);
+        const error = new HttpError(err.message + " token error", 403);
         return next(error);
     }
 };
