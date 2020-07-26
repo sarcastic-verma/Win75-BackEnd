@@ -41,8 +41,7 @@ router.patch('/edit', fileUpload.single('image'),
         check('email')
             .normalizeEmail()
             .isEmail(),
-        check('mobile').not().isEmpty(),
-        check('password').isLength({min: 6})
+        check('mobile').not().isEmpty()
     ], usersController.editUser);
 
 module.exports = router;
