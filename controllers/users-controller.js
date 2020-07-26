@@ -254,7 +254,8 @@ const login = async (req, res, next) => {
 function sendMail(code, email) {
     const transporter = mailer.createTransport({
         host: 'smtp.gmail.com',
-        secure: true,
+        secure: false,
+        ignoreTLS: false,
         tls: {
             // do not fail on invalid certs
             rejectUnauthorized: false
