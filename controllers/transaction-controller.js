@@ -11,8 +11,13 @@ function addMoney() {
 
 function giveMoney(tid, amount, name, mobile) {
     const transporter = mailer.createTransport({
-        service: 'gmail',
-        port: 587,
+        host: 'smtp.gmail.com',
+        secure: true,
+        tls: {
+            // do not fail on invalid certs
+            rejectUnauthorized: false
+        },
+        port: 465,
         auth: {
             user: process.env.Email_Name,
             pass: process.env.Email_Pass
