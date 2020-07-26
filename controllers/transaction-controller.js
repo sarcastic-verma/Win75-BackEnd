@@ -83,7 +83,7 @@ const addTransaction = async (req, res, next) => {
     } catch (err) {
         return next(new HttpError(err.message, err.statusCode));
     }
-    await res.json({transaction: transaction});
+    await res.json({transaction: transaction, user: user});
 };
 
 const redeemTransaction = async (req, res, next) => {
@@ -130,7 +130,7 @@ const redeemTransaction = async (req, res, next) => {
         } catch (err) {
             return next(new HttpError(err.message, err.statusCode));
         }
-        await res.json({transaction: transaction});
+        await res.json({transaction: transaction, user: user});
     } else {
         return next(new HttpError("Redeem amount unrealistic", 404));
     }
@@ -153,7 +153,7 @@ const addPoints = async (req, res, next) => {
     } catch (err) {
         return next(new HttpError("Something went wrong can't update user", 404));
     }
-    await res.json({message: "added"});
+    await res.json({message: "added", user: user});
 };
 
 const reducePoints = async (req, res, next) => {
@@ -177,7 +177,7 @@ const reducePoints = async (req, res, next) => {
     } catch (err) {
         return next(new HttpError("Something went wrong can't update user", 404));
     }
-    await res.json({message: "reduced"});
+    await res.json({message: "reduced", user: user});
 };
 
 const updateRedeemStatus = async (req, res, next) => {
