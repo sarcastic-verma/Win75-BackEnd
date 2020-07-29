@@ -62,6 +62,7 @@ const addTransaction = async (req, res, next) => {
         user.inWalletCash += amount;
         transaction = new Transaction({
             userId,
+            type: "Refill",
             transactionId: status[1],
             amount,
             status: status[0]
@@ -70,6 +71,7 @@ const addTransaction = async (req, res, next) => {
         transaction = new Transaction({
             userId,
             transactionId: status[1],
+            type: "Refill",
             amount,
             status: status[0]
         });
@@ -106,6 +108,7 @@ const redeemTransaction = async (req, res, next) => {
             userId,
             transactionId: "not yet returned",
             amount,
+            type: "Redeem",
             status: constants.inProgress
         });
         try {
@@ -204,7 +207,7 @@ const updateRedeemStatus = async (req, res, next) => {
     await res.json({transaction: transaction});
 };
 
-const getTransactionByUserId = async (req, res,next) => {
+const getTransactionByUserId = async (req, res, next) => {
     const userId = req.userData.userId;
 
     let userWithTransactions;
