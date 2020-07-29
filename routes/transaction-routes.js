@@ -6,10 +6,10 @@ const router = new Router();
 
 router.post('/update/:tid', transactionController.updateRedeemStatus);
 router.use(checkAuth);
-
+router.get('/getByUserId', transactionController.getTransactionByUserId);
 router.post('/add', transactionController.addTransaction);
 router.post('/redeem', transactionController.redeemTransaction);
-router.post('/reducePoints',transactionController.reducePoints);
+router.post('/reducePoints', transactionController.reducePoints);
 router.post('/addPoints', transactionController.addPoints);
 
 module.exports = router;

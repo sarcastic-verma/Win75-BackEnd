@@ -136,6 +136,7 @@ const redeemTransaction = async (req, res, next) => {
         return next(new HttpError("Redeem amount unrealistic", 404));
     }
 };
+
 const addPoints = async (req, res, next) => {
     const userId = req.userData.userId;
     const amount = req.body.amount;
@@ -202,7 +203,36 @@ const updateRedeemStatus = async (req, res, next) => {
     }
     await res.json({transaction: transaction});
 };
+
+const getTransactionByUserId = async (req, res,next) => {
+    const userId = req.userData.userId;
+
+    let userWithTransactions;
+    try {
+        userWithTransactions = await User.findById(userId).populate('transactions');
+    } catch (err) {
+        const error = new HttpError(
+            'Fetching transactions failed, please try again later.',
+            500
+        );
+        return next(error);
+    }
+
+    if (!userWithTransactions) {
+        return next(
+            new HttpError('Could not find provided user id.', 404)
+        );
+    }
+
+    await res.json({
+        transactions: userWithTransactions.transactions.map(transaction =>
+            transaction.toObject({getters: true})
+        )
+    });
+};
+
 exports.addTransaction = addTransaction;
+exports.getTransactionByUserId = getTransactionByUserId;
 exports.updateRedeemStatus = updateRedeemStatus;
 exports.redeemTransaction = redeemTransaction;
 exports.reducePoints = reducePoints;

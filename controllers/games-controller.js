@@ -38,7 +38,7 @@ const getGameById = async (req, res, next) => {
 };
 
 const getGamesByUserId = async (req, res, next) => {
-    const userId = req.params.uid;
+    const userId = req.userData.userId;
 
     let userWithGames;
     try {
