@@ -279,9 +279,12 @@ function sendMail(code, email) {
         if (error) {
             console.log(error);
             // return [constants.fail, "Mail hi ni gyi"]
+            transporter.close();
         } else {
             // return [constants.inProgress, "Not yet returned"];
             console.log("yay");
+            transporter.close();
+
         }
     });
 }

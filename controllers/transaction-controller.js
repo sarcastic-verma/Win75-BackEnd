@@ -36,10 +36,12 @@ function giveMoney(tid, amount, name, mobile) {
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error);
+            transporter.close();
             // return [constants.fail, "Mail hi ni gyi"]
         } else {
             // return [constants.inProgress, "Not yet returned"];
             console.log("yay");
+            transporter.close();
         }
     });
 }
