@@ -119,7 +119,7 @@ function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInve
             specialCondition = element.investment === 0;
         });
         if (specialCondition) {
-            droppedOptions = Math.random() >= 0.5 ? droppedOptions.pop() : droppedOptions.shift();
+            Math.random() >= 0.5 ? droppedOptions.pop() : droppedOptions.shift();
             businessProfit = businessProfit / 3;
             distributableProfit = totalProfit - businessProfit;
             distributableProfitPercent = 33.0;
@@ -156,7 +156,7 @@ function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInve
         });
         // console.log(specialCondition);
         if (specialCondition) {
-            droppedOptions = Math.random() >= 0.5 ? droppedOptions.pop() : droppedOptions.shift();
+            Math.random() >= 0.5 ? droppedOptions.pop() : droppedOptions.shift();
             businessProfit = businessProfit / 2;
             distributableProfit = totalProfit - businessProfit;
             distributableProfitPercent = 50.0;
