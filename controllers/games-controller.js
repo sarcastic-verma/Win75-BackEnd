@@ -1,9 +1,11 @@
-const {validationResult} = require('express-validator');
+
 const mongoose = require('mongoose');
 const constants = require('../constants');
 const HttpError = require('../models/http-error');
 const Game = require('../models/game');
 const User = require('../models/user');
+const PlayerSummary = require('../models/player_summary');
+
 
 const getGameById = async (req, res, next) => {
     const gameId = req.params.gid;
@@ -36,7 +38,6 @@ const getGameById = async (req, res, next) => {
         // player_summary:player_summary
     });
 };
-
 const getGamesByUserId = async (req, res, next) => {
     const userId = req.userData.userId;
 
@@ -183,9 +184,6 @@ function calcResult(spadesTotalInvestment, clubTotalInvestment, diamondTotalInve
 
 const endGame = async (req, res, next) => {
     const gameId = req.params.gid;
-    const userId = req.userData.userId;
-    let user;
-    user = await User.findById(userId);
     let game;
     try {
         game = await Game.findById(gameId);
@@ -209,8 +207,6 @@ const endGame = async (req, res, next) => {
         const sess = await mongoose.startSession();
         sess.startTransaction();
         await game.save();
-        user.games.push(game);
-        await user.save();
         await sess.commitTransaction();
     } catch (err) {
         const error = new HttpError(
@@ -219,7 +215,36 @@ const endGame = async (req, res, next) => {
         );
         return next(error);
     }
+    for (const summary of game.playerSummary) {
+        let foundPlayerSummary;
+        try {
+            foundPlayerSummary = await PlayerSummary.findById(summary).populate('playerId');
+        } catch (err) {
+            next(new HttpError(err.message, err.statusCode));
+        }
+        foundPlayerSummary.acceptedOptions = foundPlayerSummary.optedOptions;
+        console.log(foundPlayerSummary.optedOptions);
 
+        foundPlayerSummary.optedOptions.forEach((element) => {
+            console.log(game.droppedOptions.includes(element));
+            if (game.droppedOptions.includes(element)) {
+                console.log(element);
+                foundPlayerSummary.acceptedOptions.splice(foundPlayerSummary.acceptedOptions.indexOf(element), 1);
+            }
+        });
+        console.log(foundPlayerSummary.acceptedOptions);
+        foundPlayerSummary.profitableInvestment = foundPlayerSummary.acceptedOptions.length * game.betValue;
+        foundPlayerSummary.proportionalGain = foundPlayerSummary.profitableInvestment * game.distributableProfitPercent / 100;
+        foundPlayerSummary.totalGain = foundPlayerSummary.proportionalGain + foundPlayerSummary.profitableInvestment;
+        ///////////////////
+        foundPlayerSummary.playerId.inWalletCash += foundPlayerSummary.totalGain;
+        foundPlayerSummary.playerId.totalAmountWon += foundPlayerSummary.totalGain;
+        try {
+            await foundPlayerSummary.save();
+        } catch (err) {
+            return next(new HttpError(err.message, err.statusCode));
+        }
+    }
     await res.json(
         {game: game}
     )
@@ -227,5 +252,4 @@ const endGame = async (req, res, next) => {
 
 exports.getGameById = getGameById;
 exports.getGamesByUserId = getGamesByUserId;
-// exports.startGame = startGame;
 exports.endGame = endGame;

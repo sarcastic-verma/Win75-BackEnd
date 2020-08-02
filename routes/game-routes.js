@@ -4,11 +4,11 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = Router();
 
+router.get('/endgame/:gid', gameController.endGame);
 router.use(checkAuth);
 router.get('/:gid', gameController.getGameById);
 
 router.get('/user', gameController.getGamesByUserId);
 
-router.get('/endgame/:gid', gameController.endGame);
 
 module.exports = router;

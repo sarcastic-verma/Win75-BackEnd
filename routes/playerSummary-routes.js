@@ -4,7 +4,7 @@ const checkAuth = require('../middleware/check-auth');
 
 const router = new Router();
 
-router.get('/updatePlayerSummary/:gid', playerSummaryController.updatePlayerSummary);
+// router.get('/updatePlayerSummary/:gid', playerSummaryController.updatePlayerSummary);
 router.use(checkAuth);
 router.get('/:summaryId', playerSummaryController.getPlayerSummary);
 router.post('/makePlayerSummary/:gid', playerSummaryController.makePlayerSummary);

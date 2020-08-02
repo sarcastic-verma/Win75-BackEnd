@@ -110,6 +110,7 @@ const makePlayerSummary = async (req, res, next) => {
                 }
             });
             await game.save();
+            user.games.push(game);
             await user.save();
             await sess.commitTransaction();
         } catch (err) {
@@ -122,48 +123,49 @@ const makePlayerSummary = async (req, res, next) => {
         return next(new HttpError("Game not found", 404));
     }
 };
-const updatePlayerSummary = async (req, res, next) => {
-    const gameId = req.params.gid;
-    // const userId = req.userData.userId;
-    let game;
-    try {
-        game = await Game.findById(gameId);
-    } catch (err) {
-        return next(new HttpError("Error fetching game please try again later!!", 404));
-    }
-    for (const summary of game.playerSummary) {
-        let foundPlayerSummary;
-        try {
-            foundPlayerSummary = await PlayerSummary.findById(summary).populate('playerId');
-        } catch (err) {
-            next(new HttpError(err.message, err.statusCode));
-        }
-        foundPlayerSummary.acceptedOptions = foundPlayerSummary.optedOptions;
-        console.log(foundPlayerSummary.optedOptions);
-        foundPlayerSummary.optedOptions.forEach((element) => {
-            console.log(game.droppedOptions.includes(element));
-            if (game.droppedOptions.includes(element)) {
-                console.log(element);
-                foundPlayerSummary.acceptedOptions.splice(foundPlayerSummary.acceptedOptions.indexOf(element), 1);
-            }
-        });
-        console.log(foundPlayerSummary.acceptedOptions);
-        foundPlayerSummary.profitableInvestment = foundPlayerSummary.acceptedOptions.length * game.betValue;
-        foundPlayerSummary.proportionalGain = foundPlayerSummary.profitableInvestment * game.distributableProfitPercent / 100;
-        foundPlayerSummary.totalGain = foundPlayerSummary.proportionalGain + foundPlayerSummary.profitableInvestment;
-        ///////////////////
-        foundPlayerSummary.playerId.inWalletCash += foundPlayerSummary.totalGain;
-        foundPlayerSummary.playerId.totalAmountWon += foundPlayerSummary.totalGain;
-        try {
-            await foundPlayerSummary.save();
-        } catch (err) {
-            return next(new HttpError(err.message, err.statusCode));
-        }
-    }
-    await res.json({
-        game: game
-    });
-};
+// const updatePlayerSummary = async (req, res, next) => {
+//     const gameId = req.params.gid;
+//     let game;
+//     try {
+//         game = await Game.findById(gameId);
+//     } catch (err) {
+//         return next(new HttpError("Error fetching game please try again later!!", 404));
+//     }
+//     // for (const summary of game.playerSummary) {
+//     //     let foundPlayerSummary;
+//     //     try {
+//     //         foundPlayerSummary = await PlayerSummary.findById(summary).populate('playerId');
+//     //     } catch (err) {
+//     //         next(new HttpError(err.message, err.statusCode));
+//     //     }
+//     //     foundPlayerSummary.acceptedOptions = foundPlayerSummary.optedOptions;
+//     //     console.log(foundPlayerSummary.optedOptions);
+//     //
+//     //     foundPlayerSummary.optedOptions.forEach((element) => {
+//     //         console.log(game.droppedOptions.includes(element));
+//     //         if (game.droppedOptions.includes(element)) {
+//     //             console.log(element);
+//     //             foundPlayerSummary.acceptedOptions.splice(foundPlayerSummary.acceptedOptions.indexOf(element), 1);
+//     //         }
+//     //     });
+//     //     console.log(foundPlayerSummary.acceptedOptions);
+//     //     foundPlayerSummary.profitableInvestment = foundPlayerSummary.acceptedOptions.length * game.betValue;
+//     //     foundPlayerSummary.proportionalGain = foundPlayerSummary.profitableInvestment * game.distributableProfitPercent / 100;
+//     //     foundPlayerSummary.totalGain = foundPlayerSummary.proportionalGain + foundPlayerSummary.profitableInvestment;
+//     //     ///////////////////
+//     //     foundPlayerSummary.playerId.inWalletCash += foundPlayerSummary.totalGain;
+//     //     foundPlayerSummary.playerId.totalAmountWon += foundPlayerSummary.totalGain;
+//     //     try {
+//     //         await foundPlayerSummary.save();
+//     //     } catch (err) {
+//     //         return next(new HttpError(err.message, err.statusCode));
+//     //     }
+//     // }
+//     await res.json({
+//         game: game
+//     });
+// };
+
 exports.makePlayerSummary = makePlayerSummary;
-exports.updatePlayerSummary = updatePlayerSummary;
+// exports.updatePlayerSummary = updatePlayerSummary;
 exports.getPlayerSummary = getPlayerSummary;

@@ -12,11 +12,56 @@ const getEventWindow = async (req, res, next) => {
     } catch (error) {
         return next(new HttpError(error.message, error.statusCode));
     }
-    res.json({eventWindow: eventWindow});
+    await res.json({eventWindow: eventWindow});
+};
+const getCurrentEventWindow = async (req, res, next) => {
+    let currentEventWindow;
+    try {
+
+        // currentEventWindow = await EventWindow.find({
+        //     "date": {
+        //         "$gte": new Date(new Date(2020, 8, 1).setHours(0, 0, 0)),
+        //         "$lt": new Date(new Date(2020, 8, 3).setHours(23, 59, 59))
+        //     }
+        // }).sort({date: 'asc'});
+        currentEventWindow = await EventWindow.find({
+            "date": {
+                "$gte": new Date(new Date().setHours(0)),
+                "$lt": new Date(new Date().setHours(18))
+            }
+        });
+    } catch (err) {
+        return next(new HttpError(err.message + "lpop", err.statusCode));
+    }
+    let games = {
+        "0": [], "1": [], "2": []
+    };
+    console.log(currentEventWindow);
+    if (currentEventWindow.length === 0) {
+        return next(new HttpError("Event window not found" + "nf", 404));
+    }
+    for (const slot in currentEventWindow[0].slots) {
+        let foundSlots;
+        try {
+            foundSlots = await Slot.findById(currentEventWindow[0].slots[slot]);
+            console.log("start");
+            console.log(foundSlots.startTime.toLocaleString());
+            console.log(foundSlots.endTime.toLocaleString());
+
+            for (let i = 0; i < 4; i++) {
+                games[`${slot}`].push(foundSlots.games[i]._id);
+            }
+        } catch (err) {
+            next(new HttpError(err.message + "lol", err.statusCode));
+            console.log("d");
+
+        }
+    }
+    await res.json({games: games});
 };
 const createEventWindow = async (req, res, next) => {
     let today = new Date();
-    let date = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0);
+    let date = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 1, 0);
     console.log(date.toLocaleDateString());
     let eventWindow = new EventWindow({
         date,
@@ -100,13 +145,14 @@ const creatSlots = async (eventId) => {
         let today = new Date();
         console.log(today + "lol");
         let slots = [];
-        let startSlotTimestamp = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0);
-        console.log(startSlotTimestamp);
+        let startSlotTimestamp = [new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 0), new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), new Date(today.getFullYear(), today.getMonth(), today.getDate(), 17, 0)];
+
+        let endSlotTimestamp = [new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0), new Date(today.getFullYear(), today.getMonth(), today.getDate(), 17, 0), new Date(today.getFullYear(), today.getMonth(), today.getDate(), 18, 0)];
         for (let i = 0; i < 3; i++) {
             slot = new Slot({
                 eventWindowId: eventId,
-                startTime: startSlotTimestamp,
-                endTime: startSlotTimestamp.setHours(startSlotTimestamp.getHours() + 1),
+                startTime: startSlotTimestamp[i],
+                endTime: endSlotTimestamp[i],
                 game: []
             });
             slots.push(slot);
@@ -136,4 +182,5 @@ const creatSlots = async (eventId) => {
 };
 
 exports.createEventWindow = createEventWindow;
+exports.getCurrentEventWindow = getCurrentEventWindow;
 exports.getEventWindow = getEventWindow;
